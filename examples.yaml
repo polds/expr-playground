@@ -314,12 +314,9 @@ examples:
 
   - name: "Duration and timestamp"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/43
-      //
       // Validate that 'expired' date is after a 'created' date plus a 'ttl' duration
-      has(object.expired) && 
-      timestamp(object.created) + duration(object.ttl) < timestamp(object.expired)
+      "expired" in object && 
+      date(object.created) + duration(object.ttl) < date(object.expired)
     data: |
       object:
         created: "2023-06-14T02:00:14+00:00"
