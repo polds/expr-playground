@@ -4,3 +4,4 @@ bin/
 web/main.wasm
 web/assets/main.wasm.gz
 web/assets/data.json
+/.firebase
