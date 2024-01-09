@@ -316,7 +316,7 @@ examples:
   - name: "Duration and timestamp"
     expr: |
       // Validate that 'expired' date is after a 'created' date plus a 'ttl' duration
-      "expired" in object.expired && 
+      "expired" in object && 
       date(object.created) + duration(object.ttl) < date(object.expired)
     data: |
       object:
