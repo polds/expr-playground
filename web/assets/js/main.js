@@ -70,7 +70,6 @@ toggleBtn.addEventListener("click", function () {
 
 function toggleMode(theme) {
   let toggleIcon = document.getElementsByClassName("toggle-theme__icon")[0];
-  let exprLogo = document.getElementsByClassName("expr-logo")[0];
   let copyIcon = document.querySelectorAll(".editor-copy-icon");
 
   if (theme === "dark") {
@@ -78,7 +77,6 @@ function toggleMode(theme) {
     toggleIcon.src = "./assets/img/moon.svg";
     exprEditor.editor.setTheme("ace/theme/tomorrow_night");
     dataEditor.editor.setTheme("ace/theme/tomorrow_night");
-    exprLogo.src = "./assets/img/logo-dark.svg";
     copyIcon[0].src = "./assets/img/copy-dark.svg";
     copyIcon[1].src = "./assets/img/copy-dark.svg";
     localStorage.setItem("theme", "dark");
@@ -87,7 +85,6 @@ function toggleMode(theme) {
     toggleIcon.src = "./assets/img/sun.svg";
     exprEditor.editor.setTheme("ace/theme/clouds");
     dataEditor.editor.setTheme("ace/theme/clouds");
-    exprLogo.src = "./assets/img/logo.svg";
     copyIcon[0].src = "./assets/img/copy.svg";
     copyIcon[1].src = "./assets/img/copy.svg";
     localStorage.setItem("theme", "light");
