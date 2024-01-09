@@ -19,17 +19,16 @@ import (
 	"flag"
 	"log"
 	"net/http"
-
-	"github.com/polds/expr-playground/web"
 )
 
 var (
 	listen = flag.String("listen", ":8080", "listen address")
+	dir    = flag.String("dir", ".", "directory to serve")
 )
 
 func main() {
 	flag.Parse()
 	log.Printf("listening on %s...", *listen)
-	err := http.ListenAndServe(*listen, http.FileServer(http.FS(web.Assets)))
+	err := http.ListenAndServe(*listen, http.FileServer(http.Dir(*dir)))
 	log.Fatalln(err)
 }

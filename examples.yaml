@@ -42,6 +42,7 @@ examples:
   - name: "Check image registry"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/36
       //
       
       object.spec.template.spec.containers.all(container,
@@ -78,6 +79,7 @@ examples:
   - name: "Disallow HostPorts"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/37
       //
       // According the Pod Security Standards, HostPorts should be disallowed entirely.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline
@@ -116,6 +118,7 @@ examples:
   - name: "Require non-root containers"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/38
       //
       // According the Pod Security Standards, Containers must be required to run as non-root users.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
@@ -165,6 +168,7 @@ examples:
   - name: "Drop ALL capabilities"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/39
       //
       // According the Pod Security Standards, Containers must drop `ALL` capabilities, and are only permitted to add back the `NET_BIND_SERVICE` capability.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
@@ -215,6 +219,7 @@ examples:
   - name: "Semantic version check for image tags (Regex)"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/40
       //
       // Checks if the container images are tagged following the semantic version.
 
@@ -247,6 +252,7 @@ examples:
   - name: "URLs"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/41
       //
       // Examples of Kubernetes URL CEL library that is available in the playground.
       // https://kubernetes.io/docs/reference/using-api/cel/#kubernetes-url-library
@@ -302,7 +308,9 @@ examples:
   - name: "Optional"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/42
       //
+      
       object.?foo.orValue("fallback")'
     data: "object: {}"
     category: "General"
@@ -310,6 +318,7 @@ examples:
   - name: "Duration and timestamp"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/43
       //
       // Validate that 'expired' date is after a 'created' date plus a 'ttl' duration
       has(object.expired) && 
@@ -324,6 +333,7 @@ examples:
   - name: "Quantity"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/44
       //
       // Quantity library introduced in Kubernetes 1.28
 
@@ -341,6 +351,7 @@ examples:
   - name: "Access Log Filtering"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/45
       //
       // Use CEL to filter access logs in Istio by response code or target cluster.
       // https://istio.io/latest/docs/tasks/observability/logs/telemetry-api/#get-started-with-telemetry-api
@@ -408,6 +419,7 @@ examples:
   - name: "Custom Metrics"
     expr: |
       // Needs Expr translation from CEL. Contributions welcome!
+      // https://github.com/polds/expr-playground/issues/46
       //
       // Use CEL to customize the metrics that Istio generates
       // https://istio.io/latest/docs/tasks/observability/metrics/customize-metrics/#use-expressions-for-values

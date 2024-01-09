@@ -26,7 +26,7 @@ test: fmt ## Run tests.
 
 .PHONY: serve
 serve: build ## Serve static files.
-	go run cmd/server/main.go
+	go run cmd/server/main.go --dir web/
 
 .PHONY: update-data
 update-data: ## Update the web/assets/data.json file.
@@ -36,12 +36,12 @@ update-data: ## Update the web/assets/data.json file.
 .PHONY: addlicense
 addlicense: ## Add copyright license headers in source code files.
 	@test -s $(LOCALBIN)/addlicense || GOBIN=$(LOCALBIN) go install github.com/google/addlicense@latest
-	$(LOCALBIN)/addlicense -c "Undistro Authors; Fork and conversion to Expr by Peter Olds <me@polds.dev>" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" .
+	$(LOCALBIN)/addlicense -c "Undistro Authors; Peter Olds" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" .
 
 .PHONY: checklicense
 checklicense: ## Check copyright license headers in source code files.
 	@test -s $(LOCALBIN)/addlicense || GOBIN=$(LOCALBIN) go install github.com/google/addlicense@latest
-	$(LOCALBIN)/addlicense -c "Undistro Authors; Fork and conversion to Expr by Peter Olds <me@polds.dev>" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" -check .
+	$(LOCALBIN)/addlicense -c "Undistro Authors; Peter Olds" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" -check .
 
 ##@ Build
 
