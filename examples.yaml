@@ -76,19 +76,18 @@ examples:
 
   - name: "Disallow HostPorts"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/37
-      //
       // According the Pod Security Standards, HostPorts should be disallowed entirely.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline
 
-      object.spec.template.spec.containers.all(container,
-        !has(container.ports) ||
-        container.ports.all(port,
-          !has(port.hostPort) ||
-          port.hostPort == 0
-        )
-      )
+      all(object.spec.template.spec.containers, {
+          let container = #;
+          !("ports" in keys(container)) ||
+          all(container.ports, {
+              let port = #;
+              !("hostPort" in keys(port)) ||
+              port.hostPort == 0
+          })
+      })
     data: |
       object:
         apiVersion: apps/v1
