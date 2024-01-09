@@ -2,3 +2,4 @@
 bin/
 *.out
 web/main.wasm
+web/assets/main.wasm.gz
