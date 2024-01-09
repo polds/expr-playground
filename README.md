@@ -1,20 +1,23 @@
-# CEL Playground
-![GitHub](https://img.shields.io/github/license/undistro/cel-playground)
-[![Go Report Card](https://goreportcard.com/badge/github.com/undistro/cel-playground)](https://goreportcard.com/report/github.com/undistro/cel-playground)
+# Expr Playground
+![GitHub](https://img.shields.io/github/license/polds/expr-playground)
+[![Go Report Card](https://goreportcard.com/badge/github.com/polds/expr-playground)](https://goreportcard.com/report/github.com/polds/expr-playground)
 
-CEL Playground is an interactive WebAssembly (Wasm) powered environment to explore and experiment with the [Common Expression Language (CEL)](https://github.com/google/cel-spec).
-It provides a simple and user-friendly interface to write and quickly evaluate CEL expressions.
+Expr Playground is an interactive WebAssembly (Wasm) powered environment to explore and experiment with 
+[Expr-lang](https://expr-lang.org/). It provides a simple and user-friendly interface to write and quickly evaluate 
+Expr expressions.
 
-## CEL libraries
+## Credits
 
-CEL Playground is built by compiling Go code to WebAssembly and includes the following libraries that are available in the environment:
+This project is forked from [CEL Playground](https://github.com/undistro/cel-playground) and modified to support Expr. 
+Please be sure to check out their project and give them a star as well!
 
-- CEL [extended string function library](https://pkg.go.dev/github.com/google/cel-go/ext#Strings)
-- [Kubernetes list library](https://kubernetes.io/docs/reference/using-api/cel/#kubernetes-list-library)
-- [Kubernetes regex library](https://kubernetes.io/docs/reference/using-api/cel/#kubernetes-regex-library)
-- [Kubernetes URL library](https://kubernetes.io/docs/reference/using-api/cel/#kubernetes-url-library)
+## Expr libraries
 
-Take a look at [all the environment options](eval/eval.go#L26).
+CEL Playground is built by compiling Go code to WebAssembly. At present only the Expr engine is available in this 
+environment. We will look at injecting some other utilities to make this environment more useful, on-par with the the
+CEL standard library and CEL Playground.
+
+Take a look at [all the environment options](eval/eval.go#L31).
 
 ## Development
 
@@ -31,8 +34,8 @@ make serve
 ## Contributing
 
 We appreciate your contribution.
-Please refer to our [contributing guideline](https://github.com/undistro/cel-playground/blob/main/CONTRIBUTING.md) for further information.
-This project adheres to the Contributor Covenant [code of conduct](https://github.com/undistro/cel-playground/blob/main/CODE_OF_CONDUCT.md).
+Please refer to our [contributing guideline](https://github.com/polds/expr-playground/blob/main/CONTRIBUTING.md) for further information.
+This project adheres to the Contributor Covenant [code of conduct](https://github.com/polds/expr-playground/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 

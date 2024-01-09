@@ -1,5 +1,6 @@
 /**
  * Copyright 2023 Undistro Authors
+ * Modifications Fork and conversion to Expr Copyright 2024 Peter Olds <me@polds.dev>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,22 +30,15 @@ if (!WebAssembly.instantiateStreaming) {
   };
 }
 
-const celEditor = new AceEditor("cel-input");
+const exprEditor = new AceEditor("expr-input");
 const dataEditor = new AceEditor("data-input");
 const output = document.getElementById("output");
-const costElem = document.getElementById("cost");
-
-function setCost(cost) {
-  costElem.innerText = cost || "-";
-}
 
 function run() {
   const data = dataEditor.getValue();
-  const expression = celEditor.getValue();
-  const cost = document.getElementById("cost");
+  const expression = exprEditor.getValue();
 
   output.value = "Evaluating...";
-  setCost("");
 
   const result = eval(expression, data);
 
@@ -54,10 +48,9 @@ function run() {
     output.value = resultOutput;
     output.style.color = "red";
   } else {
-    const { result, cost } = JSON.parse(resultOutput);
-    output.value = JSON.stringify(result);
+    const { result } = JSON.parse(resultOutput);
+    output.value = JSON.stringify(result, null, 2);
     output.style.color = "white";
-    setCost(cost);
   }
 }
 
@@ -77,24 +70,24 @@ toggleBtn.addEventListener("click", function () {
 
 function toggleMode(theme) {
   let toggleIcon = document.getElementsByClassName("toggle-theme__icon")[0];
-  let celLogo = document.getElementsByClassName("cel-logo")[0];
+  let exprLogo = document.getElementsByClassName("expr-logo")[0];
   let copyIcon = document.querySelectorAll(".editor-copy-icon");
 
   if (theme === "dark") {
     document.body.classList.add("dark");
     toggleIcon.src = "./assets/img/moon.svg";
-    celEditor.editor.setTheme("ace/theme/tomorrow_night");
+    exprEditor.editor.setTheme("ace/theme/tomorrow_night");
     dataEditor.editor.setTheme("ace/theme/tomorrow_night");
-    celLogo.src = "./assets/img/logo-dark.svg";
+    exprLogo.src = "./assets/img/logo-dark.svg";
     copyIcon[0].src = "./assets/img/copy-dark.svg";
     copyIcon[1].src = "./assets/img/copy-dark.svg";
     localStorage.setItem("theme", "dark");
   } else {
     document.body.classList.remove("dark");
     toggleIcon.src = "./assets/img/sun.svg";
-    celEditor.editor.setTheme("ace/theme/clouds");
+    exprEditor.editor.setTheme("ace/theme/clouds");
     dataEditor.editor.setTheme("ace/theme/clouds");
-    celLogo.src = "./assets/img/logo.svg";
+    exprLogo.src = "./assets/img/logo.svg";
     copyIcon[0].src = "./assets/img/copy.svg";
     copyIcon[1].src = "./assets/img/copy.svg";
     localStorage.setItem("theme", "light");
@@ -103,7 +96,7 @@ function toggleMode(theme) {
 
 function share() {
   const data = dataEditor.getValue();
-  const expression = celEditor.getValue();
+  const expression = exprEditor.getValue();
 
   const obj = {
     data: data,
@@ -141,41 +134,41 @@ if (urlParams.has("content")) {
       throw new Error("Invalid content parameter");
     }
     const obj = JSON.parse(decompressedData);
-    celEditor.setValue(obj.expression, -1);
+    exprEditor.setValue(obj.expression, -1);
     dataEditor.setValue(obj.data, -1);
   } catch (error) {
     console.error(error);
   }
 }
 
-let celCopyIcon = document.getElementById("cel-copy-icon");
-let celCopyHover = document.getElementById("cel-copy-hover");
-let celCopyClick = document.getElementById("cel-copy-click");
-let celInput = document.getElementById("cel-cont");
+let exprCopyIcon = document.getElementById("expr-copy-icon");
+let exprCopyHover = document.getElementById("expr-copy-hover");
+let exprCopyClick = document.getElementById("expr-copy-click");
+let exprInput = document.getElementById("expr-cont");
 
-celInput.addEventListener("mouseover", () => {
-  celCopyIcon.style.display = "inline";
+exprInput.addEventListener("mouseover", () => {
+  exprCopyIcon.style.display = "inline";
 });
-celInput.addEventListener("mouseleave", () => {
-  celCopyIcon.style.display = "none";
+exprInput.addEventListener("mouseleave", () => {
+  exprCopyIcon.style.display = "none";
 });
 
-celCopyIcon.addEventListener("click", () => {
-  let value = celEditor.editor.getValue();
+exprCopyIcon.addEventListener("click", () => {
+  let value = exprEditor.editor.getValue();
   navigator.clipboard.writeText(value).catch(console.error);
-  celCopyHover.style.display = "none";
-  celCopyClick.style.display = "flex";
+  exprCopyHover.style.display = "none";
+  exprCopyClick.style.display = "flex";
   setTimeout(() => {
-    celCopyClick.style.display = "none";
+    exprCopyClick.style.display = "none";
   }, 1000);
 });
 
-celCopyIcon.addEventListener("mouseover", () => {
-  celCopyHover.style.display = "flex";
+exprCopyIcon.addEventListener("mouseover", () => {
+  exprCopyHover.style.display = "flex";
 });
 
-celCopyIcon.addEventListener("mouseleave", () => {
-  celCopyHover.style.display = "none";
+exprCopyIcon.addEventListener("mouseleave", () => {
+  exprCopyHover.style.display = "none";
 });
 
 let dataCopyIcon = document.getElementById("data-copy-icon");
@@ -241,7 +234,7 @@ function copy() {
       go.run(result.instance);
       document.getElementById("run").disabled = false;
       document.getElementById("output").placeholder =
-        "Press 'Run' to evaluate your CEL expression.";
+        "Press 'Run' to evaluate your Expr expression.";
     })
     .catch((err) => {
       console.error(err);
@@ -264,8 +257,8 @@ document.addEventListener("keydown", (event) => {
 fetch("../assets/data.json")
   .then((response) => response.json())
   .then(({ examples, versions }) => {
-    // Dynamically set the CEL Go version
-    document.getElementById("version").innerText = versions["cel-go"];
+    // Dynamically set the Expr Go version
+    document.getElementById("version").innerText = versions["expr"];
 
     // Load the examples into the select element
     const examplesList = document.getElementById("examples");
@@ -296,7 +289,7 @@ fetch("../assets/data.json")
 
       if (example.label === "default") {
         if (!urlParams.has("content")) {
-          celEditor.setValue(example.value[0].cel, -1);
+          exprEditor.setValue(example.value[0].expr, -1);
           dataEditor.setValue(example.value[0].data, -1);
         }
       } else if (example.label === "Blank") {
@@ -317,9 +310,8 @@ fetch("../assets/data.json")
       const example = examples.find(
         (example) => example.name === event.target.value
       );
-      celEditor.setValue(example.cel, -1);
+      exprEditor.setValue(example.expr, -1);
       dataEditor.setValue(example.data, -1);
-      setCost("");
       output.value = "";
     });
   })

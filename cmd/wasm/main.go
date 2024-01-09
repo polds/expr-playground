@@ -1,4 +1,5 @@
 // Copyright 2023 Undistro Authors
+// Modifications Fork and conversion to Expr Copyright 2024 Peter Olds <me@polds.dev>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/undistro/cel-playground/eval"
+	"github.com/polds/expr-playground/eval"
 )
 
 func main() {

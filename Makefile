@@ -1,4 +1,4 @@
-CEL_GO_VERSION=$(shell go list -f "{{.Version}}" -m github.com/google/cel-go)
+EXPR_GO_VERSION=$(shell go list -f "{{.Version}}" -m github.com/expr-lang/expr)
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
@@ -25,31 +25,29 @@ test: fmt ## Run tests.
 	go test ./... -coverprofile cover.out
 
 .PHONY: serve
-serve: ## Serve static files.
-	python3 -m http.server -d web/ 8080
-	#Uncomment the command below to serve with Go
-	#go run cmd/server/main.go --dir web/
+serve: build ## Serve static files.
+	go run cmd/server/main.go
 
 .PHONY: update-data
 update-data: ## Update the web/assets/data.json file.
 	yq -ojson '.' examples.yaml > web/assets/data.json
-	yq -ojson -i '.versions.cel-go = "$(CEL_GO_VERSION)"' web/assets/data.json
+	yq -ojson -i '.versions.expr = "$(EXPR_GO_VERSION)"' web/assets/data.json
 
 .PHONY: addlicense
 addlicense: ## Add copyright license headers in source code files.
 	@test -s $(LOCALBIN)/addlicense || GOBIN=$(LOCALBIN) go install github.com/google/addlicense@latest
-	$(LOCALBIN)/addlicense -c "Undistro Authors" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" .
+	$(LOCALBIN)/addlicense -c "Undistro Authors; Fork and conversion to Expr by Peter Olds <me@polds.dev>" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" .
 
 .PHONY: checklicense
 checklicense: ## Check copyright license headers in source code files.
 	@test -s $(LOCALBIN)/addlicense || GOBIN=$(LOCALBIN) go install github.com/google/addlicense@latest
-	$(LOCALBIN)/addlicense -c "Undistro Authors" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" -check .
+	$(LOCALBIN)/addlicense -c "Undistro Authors; Fork and conversion to Expr by Peter Olds <me@polds.dev>" -l "apache" -ignore ".github/**" -ignore ".idea/**" -ignore "web/dist/**" -check .
 
 ##@ Build
 
 .PHONY: build
 build: fmt update-data ## Build the wasm binary.
-	GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o web/assets/main.wasm cmd/wasm/main.go
+	GOOS=js GOARCH=wasm go build -trimpath -ldflags="-s -w" -o web/assets/main.wasm cmd/wasm/main.go
 	gzip --best -f web/assets/main.wasm
 
 ## Location to install dependencies to

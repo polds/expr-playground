@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--
  Copyright 2023 Undistro Authors
+ Modifications Fork and conversion to Expr Copyright 2024 Peter Olds <me@polds.dev>
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>CEL Playground</title>
+    <title>Expr Playground</title>
     <link rel="stylesheet" type="text/css" href="dist/nice-select2.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -33,30 +34,14 @@
     <link rel="icon" type="image/x-icon" href="assets/img/fav.ico" />
 
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-GV0C317DWN"
-    ></script>
-
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-GV0C317DWN");
-    </script>
   </head>
 
   <body>
     <nav class="navbar">
       <div href="/" class="logo">
-        <img class="cel-logo" src="assets/img/logo.svg" alt="Logo" />
+        <img class="expr-logo" src="assets/img/logo.svg" alt="Logo" />
         <div class="divider"></div>
-        <span>Quickly test Common Expression Language</span>
+        <span>Quickly test Expr</span>
       </div>
       <div class="nav-links">
         <div class="share-url__container">
@@ -131,7 +116,7 @@
         <div class="nav-divider"></div>
         <a
           class="nav-link"
-          href="https://github.com/undistro/cel-playground"
+          href="https://github.com/polds/cel-playground"
           target="_blank"
         >
           <img src="assets/img/github.svg" alt="GitHub" />
@@ -145,7 +130,7 @@
           <div class="editor__header">
             <div>
               <span class="title"> Expression </span>
-              <span class="description">(CEL format)</span>
+              <span class="description">(Expr format)</span>
             </div>
             <select id="examples" class="right">
               <option data-display="Examples" value="" disabled selected hidden>
@@ -153,20 +138,20 @@
               </option>
             </select>
           </div>
-          <div id="cel-cont" class="editor__cont">
+          <div id="expr-cont" class="editor__cont">
             <div class="editor-copy-btn">
               <img
                 src="./assets/img/copy.svg"
                 alt="copy"
                 class="editor-copy-icon"
-                id="cel-copy-icon"
+                id="expr-copy-icon"
               />
-              <div class="copy-hover" id="cel-copy-hover">
+              <div class="copy-hover" id="expr-copy-hover">
                 Copy to clipboard
               </div>
-              <div class="copy-click" id="cel-copy-click">Copied!</div>
+              <div class="copy-click" id="expr-copy-click">Copied!</div>
             </div>
-            <div id="cel-input" class="editor__input"></div>
+            <div id="expr-input" class="editor__input"></div>
           </div>
         </div>
         <div class="output-container">
@@ -199,21 +184,6 @@
           <div class="editor editor--output">
             <div class="editor__header">
               <span class="output-title"> Output </span>
-              <span class="cost__header">
-                <span class="cost__header__icon__text">
-                  <a
-                    href="https://kubernetes.io/docs/reference/using-api/cel/#resource-constraints"
-                    target="_blank"
-                    referrerpolicy="no-referrer"
-                    ><i id="cost-info" class="ph-fill ph-info"></i
-                  ></a>
-                  <span class="text">Cost:</span>
-                  <div id="cost-tooltip" class="cost-tooltip">
-                    <span>Click to see more about costs.</span>
-                  </div>
-                </span>
-                <span id="cost"> - </span>
-              </span>
             </div>
             <textarea
               id="output"
@@ -227,28 +197,40 @@
     </main>
     <footer>
       <span
-        >Powered by
-        <a href="https://www.getup.io/en/getup-open-source/" target="_blank"
-          >Getup</a
+      >Expr playground forked by
+        <a
+          href="https://github.com/polds"
+          target="_blank"
+          >polds</a
+        > from
+        <a
+          href="https://playcel.undistro.io/"
+          target="_blank"
+          >CEL Playground</a
         >
+        by
+        <a
+          href="https://undistro.io/"
+          target="_blank"
+          >Undistro</a
+        >.
       </span>
       <span class="langdef">
         <a
-          href="https://github.com/google/cel-spec/blob/master/doc/langdef.md"
+          href="https://expr-lang.org/docs/language-definition"
           target="_blank"
           >Language Definition</a
         >
         |
       </span>
       <span class="version">
-        <a href="https://github.com/google/cel-go" target="_blank"
-          >cel-go <span id="version">...</span></a
+        <a href="https://github.com/expr-lang/expr" target="_blank"
+          >expr <span id="version">...</span></a
         >
       </span>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js"></script>
     <script src="dist/nice-select2.js"></script>
     <script type="module" src="assets/js/main.js"></script>
-    <script type="module" src="assets/js/cost-tooltip.js"></script>
   </body>
 </html>
