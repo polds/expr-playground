@@ -13,7 +13,7 @@ Please be sure to check out their project and give them a star as well!
 
 ## Expr libraries
 
-CEL Playground is built by compiling Go code to WebAssembly. At present only the Expr engine is available in this 
+Expr Playground is built by compiling Go code to WebAssembly. At present only the Expr engine is available in this 
 environment. We will look at injecting some other utilities to make this environment more useful, on-par with the the
 CEL standard library and CEL Playground.
 
@@ -39,4 +39,4 @@ This project adheres to the Contributor Covenant [code of conduct](https://githu
 
 ## License
 
-CEL Playground is available under the Apache 2.0 license. See the [LICENSE](LICENSE) file for more info.
+Expr Playground and the original CEL Playground is available under the Apache 2.0 license. See the [LICENSE](LICENSE) file for more info.
