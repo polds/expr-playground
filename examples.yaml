@@ -41,16 +41,14 @@ examples:
 
   - name: "Check image registry"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/36
-      //
-      
-      object.spec.template.spec.containers.all(container,
-        params.allowedRegistries.exists(registry,
-          ((registry in ['docker.io', 'docker.io/library']) && !container.image.contains('/')) ||
-          container.image.startsWith(registry)
-        )
-      )
+      all(object.spec.template.spec.containers, {
+          let container = #; 
+          any(params.allowedRegistries, { 
+              let registry = #;
+              ((registry in ['docker.io', 'docker.io/library']) && !(container.image contains '/')) ||
+              container.image startsWith registry
+          })
+      })
     data: |
       params:
         allowedRegistries: 
