@@ -13,23 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+// Package web embeds the web assets into the binary when included.
+package web
 
-import (
-	"flag"
-	"log"
-	"net/http"
+import "embed"
 
-	"github.com/polds/expr-playground/web"
-)
-
-var (
-	listen = flag.String("listen", ":8080", "listen address")
-)
-
-func main() {
-	flag.Parse()
-	log.Printf("listening on %s...", *listen)
-	err := http.ListenAndServe(*listen, http.FileServer(http.FS(web.Assets)))
-	log.Fatalln(err)
-}
+//go:embed all:*
+var Assets embed.FS

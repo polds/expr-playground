@@ -1,5 +1,6 @@
 /**
  * Copyright 2023 Undistro Authors
+ * Modifications Fork and conversion to Expr Copyright 2024 Peter Olds <me@polds.dev>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  */
 
 const EDITOR_DEFAULTS = {
-  "cel-input": {
+  "expr-input": {
     theme: "ace/theme/clouds",
     mode: "ace/mode/javascript",
   },
