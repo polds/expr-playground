@@ -110,6 +110,11 @@ func TestEval(t *testing.T) {
 			skip: true, // https://github.com/polds/expr-playground/issues/9
 		},
 		{
+			name: "duration",
+			exp:  `duration('1d') != duration('1d')`,
+			want: true,
+		},
+		{
 			name: "sets.contains test 1",
 			exp:  `sets.contains([], [])`,
 			want: true,
@@ -204,145 +209,152 @@ func TestEval(t *testing.T) {
 	}
 }
 
+// TestValidation compiles the expr expression and then runs it against the given input.
 func TestValidation(t *testing.T) {
 	tests := []struct {
-		name    string
-		exp     string
-		wantErr bool
-		skip    bool
+		name          string
+		exp           string
+		shouldCompile bool
+		shouldRun     bool
+		skip          bool
 	}{
+		{
+			name: "garbage",
+			exp:  `blue ~!< 1`,
+		},
 		// Duration Literals
 		{
-			name: "Duration Validation test 1",
-			exp:  `duration('1')`, // Technically valid, a quoted '1' is 49ns. But it's parsed successfully.
+			name:          "Duration Validation test 1",
+			exp:           `duration('1')`, // Missing unit in duration.
+			shouldCompile: true,
 		},
 		{
-			name:    "Duration Validation test 2",
-			exp:     `duration('1d')`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/22
+			// Note: This duration is invalid. There are two things going on here:
+			//  - In vanilla go this is a rune literal and is invalid because it's more than one character.
+			//  - But the Expr compilation type casts the any to a string and go parses it as a string. But this is
+			// 	  still invalid because day is not a duration valid unit. So Expr compiles is successfully, but
+			//    will fail Eval. So we run the program after compilation to catch this.
+			//
+			// https://github.com/expr-lang/expr/blob/master/builtin/builtin.go#L615
+			name:          "Duration Validation test 2",
+			exp:           `duration('1d')`, // No day unit in Go duration.
+			shouldCompile: true,
 		},
 		{
-			name:    "Duration Validation test 3",
-			exp:     `duration('1us') < duration('1nns')`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/23
+			name:          "Duration Validation test 3",
+			exp:           `duration('1us') < duration('1nns')`,
+			shouldCompile: true,
 		},
 		{
-			name: "Duration Validation test 4",
-			exp:  `duration('2h3m4s5us')`,
+			name:          "Duration Validation test 4",
+			exp:           `duration('2h3m4s5us')`,
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Duration Validation test 5",
-			exp:  `duration(x)`,
+			name:          "Duration Validation test 5",
+			exp:           `duration(x)`,
+			shouldCompile: true,
 		},
 
 		// Timestamp Literals
 		{
-			name:    "Timestamp Validation test 1",
-			exp:     `timestamp('1000-00-00T00:00:00Z')`,
-			wantErr: true,
+			name:          "Timestamp Validation test 1",
+			exp:           `date('1000-00-00T00:00:00Z')`, // This is an invalid date.
+			shouldCompile: true,
 		},
 		{
-			name:    "Timestamp Validation test 2",
-			exp:     `timestamp('1000-01-01T00:00:00ZZ')`,
-			wantErr: true,
+			name:          "Timestamp Validation test 2",
+			exp:           `date('1000-01-01T00:00:00Z')`, // This is a valid date. But it's the min date.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
+
 		{
-			name: "Timestamp Validation test 3",
-			exp:  `timestamp('1000-01-01T00:00:00Z')`,
-			skip: true, // https://github.com/polds/expr-playground/issues/24
+			name:          "Timestamp Validation test 3",
+			exp:           `date('1000-01-01T00:00:00ZZ')`, // Two Z's is invalid.
+			shouldCompile: true,
 		},
 		{
 			name: "Timestamp Validation test 4",
-			exp:  `timestamp(-6213559680)`, // min unix epoch time.
-			skip: true,                     // https://github.com/polds/expr-playground/issues/25
+			exp:  `date(-6213559680)`, // unit missing
 		},
 		{
-			name:    "Timestamp Validation test 5",
-			exp:     `timestamp(-62135596801)`,
-			wantErr: true,
-		},
-		{
-			name: "Timestamp Validation test 6",
-			exp:  `timestamp(x)`,
-			skip: true, // https://github.com/polds/expr-playground/issues/26
+			name:          "Timestamp Validation test 5",
+			exp:           `date(x)`,
+			shouldCompile: true,
 		},
 
 		// Regex Literals
 		{
 			name: "Regex Validation test 1",
 			exp:  `'hello'.matches('el*')`,
-			skip: true, // https://github.com/polds/expr-playground/issues/27
 		},
 		{
-			name:    "Regex Validation test 2",
-			exp:     `'hello'.matches('x++')`,
-			wantErr: true,
+			name: "Regex Validation test 2",
+			exp:  `'hello'.matches('x++')`,
 		},
 		{
-			name:    "Regex Validation test 3",
-			exp:     `'hello'.matches('(?<name%>el*)')`,
-			wantErr: true,
+			name: "Regex Validation test 3",
+			exp:  `'hello'.matches('(?<name%>el*)')`,
 		},
 		{
-			name:    "Regex Validation test 4",
-			exp:     `'hello'.matches('??el*')`,
-			wantErr: true,
+			name: "Regex Validation test 4",
+			exp:  `'hello'.matches('??el*')`,
 		},
 		{
 			name: "Regex Validation test 5",
 			exp:  `'hello'.matches(x)`,
-			skip: true, // https://github.com/polds/expr-playground/issues/28
 		},
 
 		// Homogeneous Aggregate Literals
 		{
-			name:    "Homogeneous Aggregate Validation test 1",
-			exp:     `name in ['hello', 0]`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/29
+			name:          "Homogeneous Aggregate Validation test 1",
+			exp:           `name in ['hello', 0]`, // Expr allows the type mixed array.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name:    "Homogeneous Aggregate Validation test 2",
-			exp:     `{'hello':'world', 1:'!'}`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/30
+			name:          "Homogeneous Aggregate Validation test 2",
+			exp:           `{'hello':'world', 1:'!'}`, // Expr casts the integer to a string literal. This may be a bug.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name:    "Homogeneous Aggregate Validation test 3",
-			exp:     `name in {'hello':'world', 'goodbye':true}`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/31
+			name:          "Homogeneous Aggregate Validation test 3",
+			exp:           `name in {'hello':'world', 'goodbye':true}`, // Expr correctly handles the boolean value.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Homogeneous Aggregate Validation test 4",
-			exp:  `name in ['hello', 'world']`,
-			skip: true, // https://github.com/polds/expr-playground/issues/31
+			name:          "Homogeneous Aggregate Validation test 4",
+			exp:           `name in ['hello', 'world']`, // This is a valid Expr expression.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Homogeneous Aggregate Validation test 5",
-			exp:  `name in ['hello', ?optional.ofNonZeroValue('')]`,
-			skip: true, // https://github.com/polds/expr-playground/issues/32
+			name:          "Homogeneous Aggregate Validation test 5",
+			exp:           `name in ['hello', optional ?? '']`,
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Homogeneous Aggregate Validation test 6",
-			exp:  `name in [?optional.ofNonZeroValue(''), 'hello', ?optional.of('')]`,
-			skip: true, // https://github.com/polds/expr-playground/issues/33
+			name:          "Homogeneous Aggregate Validation test 7",
+			exp:           `name in {'hello': false, 'world': true}`, // Expr allows this even though the compared type is a string.
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Homogeneous Aggregate Validation test 7",
-			exp:  `name in {'hello': false, 'world': true}`,
+			name:          "Homogeneous Aggregate Validation test 8",
+			exp:           `{'hello': false, 'world': optional ?? true }`,
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 		{
-			name: "Homogeneous Aggregate Validation test 8",
-			exp:  `{'hello': false, ?'world': optional.ofNonZeroValue(true)}`,
-			skip: true, // https://github.com/polds/expr-playground/issues/34
-		},
-		{
-			name: "Homogeneous Aggregate Validation test 9",
-			exp:  `{?'hello': optional.ofNonZeroValue(false), 'world': true}`,
-			skip: true, // https://github.com/polds/expr-playground/issues/35
+			name:          "Homogeneous Aggregate Validation test 9",
+			exp:           `{'hello': optional ?? false, 'world': true}`,
+			shouldCompile: true,
+			shouldRun:     true,
 		},
 	}
 
@@ -350,7 +362,7 @@ func TestValidation(t *testing.T) {
 		"x":    "",
 		"name": "",
 	}
-	opts := append(exprEnvOptions, expr.Env(env))
+	opts := append(exprEnvOptions, expr.Env(env), expr.AllowUndefinedVariables())
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -358,10 +370,14 @@ func TestValidation(t *testing.T) {
 				t.Skip("Skipping broken test due to CEL -> Expr migration.")
 			}
 
-			_, err := expr.Compile(tt.exp, opts...)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Compile() got error = %v, wantErr %t", err, tt.wantErr)
-				return
+			program, err := expr.Compile(tt.exp, opts...)
+			if (err != nil) == tt.shouldCompile {
+				t.Errorf("Compile() got error = %v, shouldCompile %t", err, tt.shouldCompile)
+			}
+
+			_, err = expr.Run(program, env)
+			if (err != nil) == tt.shouldRun {
+				t.Errorf("Run() got error = %v, shouldRun %t", err, tt.shouldRun)
 			}
 		})
 	}
