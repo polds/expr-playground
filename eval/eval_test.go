@@ -213,10 +213,8 @@ func TestValidation(t *testing.T) {
 	}{
 		// Duration Literals
 		{
-			name:    "Duration Validation test 1",
-			exp:     `duration('1')`,
-			wantErr: true,
-			skip:    true, // https://github.com/polds/expr-playground/issues/21
+			name: "Duration Validation test 1",
+			exp:  `duration('1')`, // Technically valid, a quoted '1' is 49ns. But it's parsed successfully.
 		},
 		{
 			name:    "Duration Validation test 2",
