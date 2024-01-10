@@ -81,10 +81,10 @@ examples:
 
       all(object.spec.template.spec.containers, {
           let container = #;
-          !("ports" in keys(container)) ||
+          "ports" not in container ||
           all(container.ports, {
               let port = #;
-              !("hostPort" in keys(port)) ||
+              "hostPort" not in port ||
               port.hostPort == 0
           })
       })
@@ -114,28 +114,21 @@ examples:
 
   - name: "Require non-root containers"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/38
-      //
       // According the Pod Security Standards, Containers must be required to run as non-root users.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
 
       // Pod or Containers must set `securityContext.runAsNonRoot`
       (
-        (has(object.spec.template.spec.securityContext) && has(object.spec.template.spec.securityContext.runAsNonRoot)) ||
-        object.spec.template.spec.containers.all(container,
-          has(container.securityContext) && has(container.securityContext.runAsNonRoot)
-        )
+          ("securityContext" in object.spec.template.spec && "runAsNonRoot" in object.spec.template.spec.securityContext) ||
+          all(object.spec.template.spec.containers, { "securityContext" in # && "runAsNonRoot" in #.securityContext })
       )
       &&
 
       // Neither Pod nor Containers should set `securityContext.runAsNonRoot` to false
       (
-        (!has(object.spec.template.spec.securityContext) || !has(object.spec.template.spec.securityContext.runAsNonRoot) || object.spec.template.spec.securityContext.runAsNonRoot != false)
-        &&
-        object.spec.template.spec.containers.all(container,
-          !has(container.securityContext) || !has(container.securityContext.runAsNonRoot) || container.securityContext.runAsNonRoot != false
-        )
+          ("securityContext" not in object.spec.template.spec || "runAsNonRoot" not in object.spec.template.spec.securityContext || object.spec.template.spec.securityContext.runAsNonRoot != false)
+          &&
+          all(object.spec.template.spec.containers, { "securityContext" not in # || "runAsNonRoot" not in #.securityContext || #.securityContext.runAsNonRoot != false })
       )
     data: |
       object:
@@ -164,28 +157,29 @@ examples:
 
   - name: "Drop ALL capabilities"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/39
-      //
       // According the Pod Security Standards, Containers must drop `ALL` capabilities, and are only permitted to add back the `NET_BIND_SERVICE` capability.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
 
       // Containers must drop `ALL` capabilities,
-      object.spec.template.spec.containers.all(container,
-        has(container.securityContext) &&
-        has(container.securityContext.capabilities) &&
-        has(container.securityContext.capabilities.drop) &&
-        size(container.securityContext.capabilities.drop) >= 1 &&
-        container.securityContext.capabilities.drop.exists(c, c == 'ALL')
-      )
+      all(object.spec.template.spec.containers, {
+          let container = #;
+
+          "securityContext" in container &&
+          "capabilities" in container.securityContext &&
+          "drop" in container.securityContext.capabilities &&
+          len(container.securityContext.capabilities.drop) >= 1 &&
+          any(container.securityContext.capabilities.drop, # == 'ALL')
+      })
       &&
       // and are only permitted to add back the `NET_BIND_SERVICE` capability
-      object.spec.template.spec.containers.all(container,
-        !has(container.securityContext) ||
-        !has(container.securityContext.capabilities) ||
-        !has(container.securityContext.capabilities.add) ||
-        container.securityContext.capabilities.add.all(cap, cap in params.allowedCapabilities)
-      )
+      all(object.spec.template.spec.containers, {
+          let container = #;
+          
+          "securityContext" not in container ||
+          "capabilities" not in container.securityContext ||
+          "add" not in container.securityContext.capabilities ||
+          all(container.securityContext.capabilities.add, # in params.allowedCapabilities)
+      })
     data: |
       params:
         allowedCapabilities: [NET_BIND_SERVICE]
@@ -215,19 +209,17 @@ examples:
 
   - name: "Semantic version check for image tags (Regex)"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/40
-      //
       // Checks if the container images are tagged following the semantic version.
 
-      object.spec.containers.all(container,
-        container.image.contains("@sha256") || // allow digest
-        container.image.lastIndexOf(":") > -1 &&
-        container.image.substring(container.image.lastIndexOf(":") + 1)
-          .matches('^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$')
-        // the regex above is suggested by semver.org: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-        // allowing the "v" prefix
-      )
+      all(object.spec.containers, {
+          let container = #;
+          
+          container.image contains "@sha256" ||
+          lastIndexOf(container.image, ":") > -1 &&
+          container.image[lastIndexOf(container.image, ":") + 1:] matches '^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$'
+          // the regex above is suggested by semver.org: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+          // allowing the "v" prefix
+      })
     data: |
       object:
         apiVersion: v1
@@ -304,11 +296,7 @@ examples:
 
   - name: "Optional"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/42
-      //
-      
-      object.?foo.orValue("fallback")'
+      object?.foo ?? "fallback"
     data: "object: {}"
     category: "General"
 
@@ -344,9 +332,6 @@ examples:
 
   - name: "Access Log Filtering"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/45
-      //
       // Use CEL to filter access logs in Istio by response code or target cluster.
       // https://istio.io/latest/docs/tasks/observability/logs/telemetry-api/#get-started-with-telemetry-api
       //
@@ -412,9 +397,6 @@ examples:
 
   - name: "Custom Metrics"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/46
-      //
       // Use CEL to customize the metrics that Istio generates
       // https://istio.io/latest/docs/tasks/observability/metrics/customize-metrics/#use-expressions-for-values
       // 
@@ -435,7 +417,7 @@ examples:
       //         request_host:
       //           value: "request.host"               # <--- CEL
       
-      has(request.host) ? request.host : "unknown"
+      "host" in request ? request.host : "unknown"
     data: |
       request:
         duration: "4.144461ms"
