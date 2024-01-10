@@ -81,10 +81,10 @@ examples:
 
       all(object.spec.template.spec.containers, {
           let container = #;
-          !("ports" in keys(container)) ||
+          "ports" not in container ||
           all(container.ports, {
               let port = #;
-              !("hostPort" in keys(port)) ||
+              "hostPort" not in port ||
               port.hostPort == 0
           })
       })
