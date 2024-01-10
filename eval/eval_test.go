@@ -85,9 +85,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "strings",
-			exp:  "object.abc.join(', ')",
+			exp:  "join(object.abc, ', ')",
 			want: "a, b, c",
-			skip: true, // https://github.com/polds/expr-playground/issues/7
 		},
 		{
 			name: "cross type numeric comparisons",
