@@ -73,7 +73,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "list",
-			// For some reason object.items == sort(object.items) is false. Needs further investigation.
+			// For some reason object.items == sort(object.items) is false here, but the playground evaluates it as true.
+			// Needs further investigation.
 			exp:  `object.items == sort(object.items) && sum(object.items) == 6 && sort(object.items)[-1] == 3 && findIndex(object.items, # == 1) == 0`,
 			want: true,
 			skip: true, // https://github.com/polds/expr-playground/issues/5
@@ -100,7 +101,7 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "split",
-			exp:  "object.image | split() | len() == 2",
+			exp:  "len(split(object.image, ':')) == 2",
 			want: true,
 		},
 		{
@@ -110,9 +111,9 @@ func TestEval(t *testing.T) {
 			skip: true, // https://github.com/polds/expr-playground/issues/9
 		},
 		{
-			name: "duration",
-			exp:  `duration('1d') != duration('1d')`,
-			want: true,
+			name:    "duration",
+			exp:     `duration('1d')`,
+			wantErr: true,
 		},
 		{
 			name: "sets.contains test 1",
