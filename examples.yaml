@@ -114,28 +114,21 @@ examples:
 
   - name: "Require non-root containers"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/38
-      //
       // According the Pod Security Standards, Containers must be required to run as non-root users.
       // https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted
 
       // Pod or Containers must set `securityContext.runAsNonRoot`
       (
-        (has(object.spec.template.spec.securityContext) && has(object.spec.template.spec.securityContext.runAsNonRoot)) ||
-        object.spec.template.spec.containers.all(container,
-          has(container.securityContext) && has(container.securityContext.runAsNonRoot)
-        )
+          ("securityContext" in object.spec.template.spec && "runAsNonRoot" in object.spec.template.spec.securityContext) ||
+          all(object.spec.template.spec.containers, { "securityContext" in # && "runAsNonRoot" in #.securityContext })
       )
       &&
 
       // Neither Pod nor Containers should set `securityContext.runAsNonRoot` to false
       (
-        (!has(object.spec.template.spec.securityContext) || !has(object.spec.template.spec.securityContext.runAsNonRoot) || object.spec.template.spec.securityContext.runAsNonRoot != false)
-        &&
-        object.spec.template.spec.containers.all(container,
-          !has(container.securityContext) || !has(container.securityContext.runAsNonRoot) || container.securityContext.runAsNonRoot != false
-        )
+          ("securityContext" not in object.spec.template.spec || "runAsNonRoot" not in object.spec.template.spec.securityContext || object.spec.template.spec.securityContext.runAsNonRoot != false)
+          &&
+          all(object.spec.template.spec.containers, { "securityContext" not in # || "runAsNonRoot" not in #.securityContext || #.securityContext.runAsNonRoot != false })
       )
     data: |
       object:
