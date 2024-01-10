@@ -296,11 +296,7 @@ examples:
 
   - name: "Optional"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/42
-      //
-      
-      object.?foo.orValue("fallback")'
+      object?.foo ?? "fallback"
     data: "object: {}"
     category: "General"
 
