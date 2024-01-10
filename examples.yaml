@@ -209,19 +209,17 @@ examples:
 
   - name: "Semantic version check for image tags (Regex)"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/40
-      //
       // Checks if the container images are tagged following the semantic version.
 
-      object.spec.containers.all(container,
-        container.image.contains("@sha256") || // allow digest
-        container.image.lastIndexOf(":") > -1 &&
-        container.image.substring(container.image.lastIndexOf(":") + 1)
-          .matches('^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$')
-        // the regex above is suggested by semver.org: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-        // allowing the "v" prefix
-      )
+      all(object.spec.containers, {
+          let container = #;
+          
+          container.image contains "@sha256" ||
+          lastIndexOf(container.image, ":") > -1 &&
+          container.image[lastIndexOf(container.image, ":") + 1:] matches '^v?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$'
+          // the regex above is suggested by semver.org: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+          // allowing the "v" prefix
+      })
     data: |
       object:
         apiVersion: v1
