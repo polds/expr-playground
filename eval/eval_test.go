@@ -94,10 +94,14 @@ func TestEval(t *testing.T) {
 			want: true,
 		},
 		{
-			name: "split",
-			exp:  "object.image.split(':').size() == 2",
+			name: "split pipe",
+			exp:  "object.image | split(':') | len() == 2",
 			want: true,
-			skip: true, // https://github.com/polds/expr-playground/issues/8
+		},
+		{
+			name: "split",
+			exp:  "object.image | split() | len() == 2",
+			want: true,
 		},
 		{
 			name: "quantity",
