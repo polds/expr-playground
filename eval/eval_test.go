@@ -73,7 +73,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "list",
-			exp:  "object.items.isSorted() && object.items.sum() == 6 && object.items.max() == 3 && object.items.indexOf(1) == 0",
+			// For some reason object.items == sort(object.items) is false. Needs further investigation.
+			exp:  "object.items == sort(object.items) && sum(object.items) == 6 && sort(object.items)[-1] == 3 && findIndex(object.items, # == 1) == 0",
 			want: true,
 			skip: true, // https://github.com/polds/expr-playground/issues/5
 		},
