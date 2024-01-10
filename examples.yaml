@@ -332,9 +332,6 @@ examples:
 
   - name: "Access Log Filtering"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/45
-      //
       // Use CEL to filter access logs in Istio by response code or target cluster.
       // https://istio.io/latest/docs/tasks/observability/logs/telemetry-api/#get-started-with-telemetry-api
       //
@@ -400,9 +397,6 @@ examples:
 
   - name: "Custom Metrics"
     expr: |
-      // Needs Expr translation from CEL. Contributions welcome!
-      // https://github.com/polds/expr-playground/issues/46
-      //
       // Use CEL to customize the metrics that Istio generates
       // https://istio.io/latest/docs/tasks/observability/metrics/customize-metrics/#use-expressions-for-values
       // 
@@ -423,7 +417,7 @@ examples:
       //         request_host:
       //           value: "request.host"               # <--- CEL
       
-      has(request.host) ? request.host : "unknown"
+      "host" in request ? request.host : "unknown"
     data: |
       request:
         duration: "4.144461ms"
