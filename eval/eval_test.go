@@ -1,4 +1,5 @@
 // Copyright 2023 Undistro Authors
+// Modifications Fork and conversion to Expr Copyright 2024 Peter Olds <me@polds.dev>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,11 +74,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "list",
-			// For some reason object.items == sort(object.items) is false here, but the playground evaluates it as true.
-			// Needs further investigation.
-			exp:  `object.items == sort(object.items) && sum(object.items) == 6 && sort(object.items)[-1] == 3 && findIndex(object.items, # == 1) == 0`,
+			exp:  `isSorted(object.items) && sum(object.items) == 6 && sort(object.items)[-1] == 3 && findIndex(object.items, # == 1) == 0`,
 			want: true,
-			skip: true, // https://github.com/polds/expr-playground/issues/5
 		},
 		{
 			name: "optional",
@@ -183,6 +181,7 @@ func TestEval(t *testing.T) {
 			skip: true, // https://github.com/polds/expr-playground/issues/20
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.skip {
@@ -190,7 +189,6 @@ func TestEval(t *testing.T) {
 			}
 
 			got, err := Eval(tt.exp, input)
-
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Eval() got error = %v, wantErr %t", err, tt.wantErr)
 				return

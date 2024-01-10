@@ -1,4 +1,4 @@
-// Copyright 2023 Undistro Authors
+// Copyright 2024 Peter Olds <me@polds.dev>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
-
-import (
-	"flag"
-	"log"
-	"net/http"
-)
-
-var (
-	listen = flag.String("listen", ":8080", "listen address")
-	dir    = flag.String("dir", ".", "directory to serve")
-)
-
-func main() {
-	flag.Parse()
-	log.Printf("listening on %s...", *listen)
-	err := http.ListenAndServe(*listen, http.FileServer(http.Dir(*dir)))
-	log.Fatalln(err)
-}
+// Package functions provides custom importable functions for Expr runtimes that may be injected into your Expr
+// runtime environments.
+package functions
