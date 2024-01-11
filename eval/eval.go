@@ -18,6 +18,7 @@ package eval
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"
@@ -30,6 +31,12 @@ type RunResponse struct {
 
 var exprEnvOptions = []expr.Option{
 	expr.AsAny(),
+
+	// Provide a constant timestamp to the expression environment.
+	expr.DisableBuiltin("now"),
+	expr.Function("now", func(...any) (any, error) {
+		return time.Date(2024, 2, 26, 0, 0, 0, 0, time.UTC).Format(time.RFC3339), nil
+	}, new(func() time.Time)),
 }
 
 // Eval evaluates the expr expression against the given input.
