@@ -74,7 +74,7 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "list",
-			exp:  `isSorted(object.items) && sum(object.items) == 6 && sort(object.items)[-1] == 3 && findIndex(object.items, # == 1) == 0`,
+			exp:  `isSorted(object.items) && sum(object.items) == 6 && object.items[-1] == 3 && findIndex(object.items, # == 1) == 0`,
 			want: true,
 		},
 		{
