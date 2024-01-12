@@ -19,6 +19,24 @@ CEL standard library and CEL Playground.
 
 Take a look at [all the environment options](eval/eval.go#L31).
 
+### Playground Methods
+
+The following custom methods are available in the playground:
+
+#### isSorted(array)
+
+Returns whether the list is sorted in ascending order.
+```expr
+isSorted([1, 2, 3]) == true
+isSorted([1, 3, 2]) == false
+isSorted(["apple", "banana", "cherry"]) == true
+```
+This custom function is importable in your own Expr code by importing github.com/polds/expr-playground/functions and
+adding `functions.IsSorted()` to your environment. The library supports sorting on types that satisfy the 
+`sort.Interface` interface.
+
+
+
 ## Development
 
 Build the Wasm binary:

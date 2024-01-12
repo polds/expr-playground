@@ -17,12 +17,14 @@ examples:
   - name: "default"
     expr: |
       // Welcome to the Expr Playground!
-      // Expr Playground is an interactive WebAssembly powered environment to explore and experiment with the Expr-lang.
+      // Expr Playground is an interactive WebAssembly powered environment to explore and experiment with Expr-lang.
       //
       // - Write your Expr expression here
       // - Use the area on the side for input data, in YAML or JSON format
       // - Press 'Run' to evaluate your Expr expression against the input data
       // - Explore our collection of examples for inspiration
+      //
+      // See the README on Github for information about what custom functions are available in the context.
 
       account.balance >= transaction.withdrawal
           || (account.overdraftProtection

@@ -22,6 +22,7 @@ import (
 
 	"github.com/expr-lang/expr"
 	"github.com/expr-lang/expr/vm"
+	"github.com/polds/expr-playground/functions"
 )
 
 type RunResponse struct {
@@ -31,6 +32,8 @@ type RunResponse struct {
 
 var exprEnvOptions = []expr.Option{
 	expr.AsAny(),
+	// Inject a custom isSorted function into the environment.
+	functions.IsSorted(),
 
 	// Provide a constant timestamp to the expression environment.
 	expr.DisableBuiltin("now"),
@@ -41,8 +44,8 @@ var exprEnvOptions = []expr.Option{
 
 // Eval evaluates the expr expression against the given input.
 func Eval(exp string, input map[string]any) (string, error) {
-	exprEnvOptions = append(exprEnvOptions, expr.Env(input))
-	program, err := expr.Compile(exp, exprEnvOptions...)
+	localOpts := append([]expr.Option{expr.Env(input)}, exprEnvOptions...)
+	program, err := expr.Compile(exp, localOpts...)
 	if err != nil {
 		return "", fmt.Errorf("failed to compile the Expr expression: %w", err)
 	}
