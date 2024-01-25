@@ -32,8 +32,9 @@ type RunResponse struct {
 
 var exprEnvOptions = []expr.Option{
 	expr.AsAny(),
-	// Inject a custom isSorted function into the environment.
+	// Inject a custom functions into the environment.
 	functions.IsSorted(),
+	functions.IsWeb3Checksummed(),
 
 	// Provide a constant timestamp to the expression environment.
 	expr.DisableBuiltin("now"),

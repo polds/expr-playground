@@ -488,6 +488,18 @@ examples:
         upstream_host_metadata: "NULL"
     category: "Istio"
 
+  - name: "Address checksummed"
+    expr: |
+      isWeb3Checksummed(network_1.address) && isWeb3Checksummed(network_2.addresses)
+    data: |
+      network_1:
+        address: 0xb0F001C7F6C665b7b8e12F29EDC1107613fe980D
+      network_2:
+        addresses:
+          - 0xb0F001C7F6C665b7b8e12F29EDC1107613fe980D
+          - 0x3106E2e148525b3DB36795b04691D444c24972fB
+    category: "Web3"
+
   - name: "Blank"
     expr: ""
     data: ""
