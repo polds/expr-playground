@@ -35,7 +35,7 @@ var exprEnvOptions = []expr.Option{
 	// Inject a custom isSorted function into the environment.
 	functions.IsSorted(),
 
-	// Provide a constant timestamp to the expression environment.
+  // Provide a constant timestamp to the expression environment.
 	expr.DisableBuiltin("now"),
 	expr.Function("now", func(...any) (any, error) {
 		return time.Date(2024, 2, 26, 0, 0, 0, 0, time.UTC).Format(time.RFC3339), nil
