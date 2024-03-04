@@ -74,7 +74,7 @@ func arrayChecksummed(v []any) (bool, error) {
 
 func checksummed(address string) (bool, error) {
 	if len(address) != 42 {
-		return false, fmt.Errorf("Address needs to be 42 characters long")
+		return false, fmt.Errorf("address needs to be 42 characters long")
 	}
 
 	if !strings.HasPrefix(address, "0x") {
