@@ -78,7 +78,7 @@ func checksummed(address string) (bool, error) {
 	}
 
 	if !strings.HasPrefix(address, "0x") {
-		return false, fmt.Errorf("Address needs to start with 0x")
+		return false, fmt.Errorf("address needs to start with 0x")
 	}
 
 	return common.IsHexAddress(address) && checksumAddress(address) == address, nil
