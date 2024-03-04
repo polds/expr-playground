@@ -86,7 +86,7 @@ func checksummed(address string) (bool, error) {
 
 // Algorithm for checksumming a web3 address:
 // - Convert the address to lowercase
-// - Hash the address usinga keccak256
+// - Hash the address using keccak256
 // - Take 40 characters of the hash, drop the rest (40 because of the address length)
 // - Iterate through each character in the original address
 //   - If the checksum character >= 8 and character in the original address at the same idx is [a, f] then capitalize
