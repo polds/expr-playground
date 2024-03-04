@@ -68,9 +68,8 @@ func TestEval(t *testing.T) {
 		},
 		{
 			name: "regex",
-			exp:  "object.image.find('v[0-9]+.[0-9]+.[0-9]*$')",
-			want: "v0.0.0",
-			skip: true, // https://github.com/polds/expr-playground/issues/4
+			exp:  "object.image matches 'v[0-9]+.[0-9]+.[0-9]*$'",
+			want: true,
 		},
 		{
 			name: "list",
