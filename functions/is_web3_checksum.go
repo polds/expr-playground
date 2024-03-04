@@ -53,7 +53,7 @@ func isWeb3Checksummed(v any) (any, error) {
 	case string:
 		return checksummed(t)
 	default:
-		return false, fmt.Errorf("type %s is not supported", reflect.TypeOf(v))
+		return false, fmt.Errorf("type %T is not supported", t)
 	}
 }
 
